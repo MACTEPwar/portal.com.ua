@@ -12,20 +12,25 @@ class View
 	*/
 	function generate($content_view, $template_view, $data = null)
 	{
-		
-		/*
+
 		if(is_array($data)) {
-			
+
 			// преобразуем элементы массива в переменные
 			extract($data);
 		}
-		*/
-		
+
+
 		/*
 		динамически подключаем общий шаблон (вид),
 		внутри которого будет встраиваться вид
 		для отображения контента конкретной страницы.
 		*/
+        var_dump($data);
 		include 'application/views/'.$template_view;
 	}
+
+	function redirect($uri)
+    {
+        echo '<script>location.replace("'.$uri.'");</script>'; exit;
+    }
 }
