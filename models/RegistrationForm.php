@@ -22,7 +22,7 @@ class RegistrationForm extends Model
         return [
             [['username','password'],'required'],
             ['username','unique','targetClass' => 'app\models\User'],
-            ['password','string','min' => 8, 'max' => 20],
+            ['password','string','min' => 4, 'max' => 20],
         ];
     }
 

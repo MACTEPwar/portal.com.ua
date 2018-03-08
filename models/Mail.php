@@ -52,4 +52,5 @@ class Mail extends \yii\db\ActiveRecord
             'all_user' => 'All User',
         ];
     }
+
 }

@@ -2,7 +2,9 @@
 
 namespace app\controllers;
 
+use app\models\MailIdentity;
 use app\models\RegistrationForm;
+use app\models\UserIdentity;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -63,7 +65,9 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        if (yii::$app->user->isGuest) return $this->actionLogin();
+        $u = UserIdentity::findOne(yii::$app->user->id);
+        return $this->render('index',['user' => $u]);
     }
 
     /**
@@ -103,13 +107,18 @@ class SiteController extends Controller
     public function actionRegistration()
     {
         $model = new RegistrationForm();
+        //var_dump(Yii::$app->request->post('RegistrationForm')['username']);die;
         if (yii::$app->request->post('RegistrationForm'))
         {
             $model->attributes = Yii::$app->request->post('RegistrationForm');
             if ($model->validate())
             {
                 $model->signup();
-                return $this->goHome();
+                mkdir("./UsersFiles/".md5(Yii::$app->request->post('RegistrationForm')['username']), 0700);
+                mkdir("./UsersFiles/".md5(Yii::$app->request->post('RegistrationForm')['username']).'/photo', 0700);
+                mkdir("./UsersFiles/".md5(Yii::$app->request->post('RegistrationForm')['username']).'/music', 0700);
+                mkdir("./UsersFiles/".md5(Yii::$app->request->post('RegistrationForm')['username']).'/video', 0700);
+                return $this->actionLogin();
             }
         }
         return $this->render('registration',['model' => $model]);
@@ -138,9 +147,22 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionAbout()
+    public function actionMail()
     {
-        $users = Users::find()->orderBy('id')->all();
-        return $this->render('about',['users_all' => $users]);
+        if (yii::$app->user->isGuest) return $this->actionLogin();
+        $u = UserIdentity::findOne(yii::$app->user->id);
+        $mail = MailIdentity::findGroup($u->id);
+//        $fp = fsockopen('localhost',80);
+//        if ($fp)
+//        {
+//            fputs(
+//                $fp,"GET /test_sock.php HTTP/1.0
+//                            User-Agent: У меня Firefox 1.5 и Windows XP
+//                            Referer: Я пришёл с php.net
+//                            Cookie: test=test_cookie;"
+//
+//            );
+//        }
+        return $this->render('mail',['user' => $u,'mail' => $mail]);
     }
 }
